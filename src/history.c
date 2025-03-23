@@ -143,6 +143,7 @@ int updateHistoryFile(const char *titleID) {
     close(histfileFd);
   }
   // Clean up
+  mcSync(0,NULL,&histfileFd);
   mcReset();
   sceCdInit(SCECdEXIT);
   return 0;
