@@ -6,7 +6,7 @@ ELF_BASE_NAME := nhddl-$(GIT_VERSION)
 EE_BIN = $(ELF_BASE_NAME)_unc.elf
 EE_BIN_PKD = $(ELF_BASE_NAME).elf
 
-EE_OBJS = main.o module_init.o common.o options.o launcher.o title_id.o target.o
+EE_OBJS = main.o module_init.o common.o options.o launcher.o title_id.o target.o history.o
 EE_OBJS += gui.o gui_graphics.o gui_args.o pad.o
 EE_OBJS += devices.o devices_mmce.o devices_bdm.o devices_iso.o devices_hdl.o
 # Basic modules
@@ -16,10 +16,12 @@ IRX_FILES += ps2dev9.irx bdm.irx bdmfs_fatfs.irx ata_bd.irx usbd_mini.irx smap_u
 IRX_FILES += usbmass_bd_mini.irx mx4sio_bd_mini.irx iLinkman.irx IEEE1394_bd_mini.irx
 # HDL modules
 IRX_FILES += ps2hdd.irx ps2fs.irx
+# History files
+RES_FILES += icon_A.sys icon_C.sys icon_J.sys
 # Embedded ELF files
 ELF_FILES += loader.elf
 
-EE_LIBS = -ldebug -lfileXio -lpatches -lgskit -ldmakit -lgskit_toolkit -lpng -lz -ltiff -lpad
+EE_LIBS = -ldebug -lfileXio -lpatches -lgskit -ldmakit -lgskit_toolkit -lpng -lz -ltiff -lpad -lmc
 EE_CFLAGS += -mno-gpopt -G0 -DGIT_VERSION="\"${GIT_VERSION}\""
 
 EE_OBJS_DIR = obj/
@@ -27,6 +29,7 @@ EE_ASM_DIR = asm/
 EE_SRC_DIR = src/
 
 EE_OBJS += $(IRX_FILES:.irx=_irx.o)
+EE_OBJS += $(RES_FILES:.sys=_sys.o)
 EE_OBJS += $(ELF_FILES:.elf=_elf.o)
 EE_OBJS := $(EE_OBJS:%=$(EE_OBJS_DIR)%)
 
@@ -69,6 +72,10 @@ iop/smap_udpbd/smap_udpbd.irx: iop/smap_udpbd
 # IRX files
 %_irx.c:
 	$(BIN2C) $(PS2SDK)/iop/irx/$(*:$(EE_SRC_DIR)%=%).irx $@ $(*:$(EE_SRC_DIR)%=%)_irx
+
+# Resource files
+%_sys.c:
+	$(BIN2C) res/$(*:$(EE_SRC_DIR)%=%).sys $@ $(*:$(EE_SRC_DIR)%=%)_sys
 
 $(EE_ASM_DIR):
 	@mkdir -p $@

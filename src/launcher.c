@@ -1,5 +1,6 @@
 #include "common.h"
 #include "devices.h"
+#include "history.h"
 #include "options.h"
 #include <kernel.h>
 #include <sifrpc.h>
@@ -95,9 +96,14 @@ void launchTitle(Target *target, ArgumentList *arguments) {
     return;
   }
 
-  printf("Updating last launched title\n");
+  printf("Updating history file and last launched title\n");
   if (updateLastLaunchedTitle(target->device, target->fullPath)) {
     printf("ERROR: Failed to update last launched title\n");
+  }
+
+  // Only update history if MMCE is not enabled
+  if (!(LAUNCHER_OPTIONS.mode & MODE_MMCE)){
+    updateHistoryFile(target->id);
   }
 
   // Sync storage device before loading Neutrino
