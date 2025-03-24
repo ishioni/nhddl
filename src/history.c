@@ -140,10 +140,13 @@ int updateHistoryFile(const char *titleID) {
     if (count != HISTORY_FILE_SIZE) {
       printf("ERROR: Failed to write: %d/%d bytes written\n", count, HISTORY_FILE_SIZE);
     }
+    mcFlush(histfileFd);
+    while (mcSync(0,NULL,NULL)) {
+      sleep(1);
+    }
     close(histfileFd);
   }
   // Clean up
-  mcSync(0,NULL,&histfileFd);
   mcReset();
   sceCdInit(SCECdEXIT);
   return 0;
